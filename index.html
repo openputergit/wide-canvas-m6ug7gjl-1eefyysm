@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Calculus Learning Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .clay-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 
+                8px 8px 16px rgba(174, 174, 192, 0.4),
+                -8px -8px 16px rgba(255, 255, 255, 0.9),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+                inset -2px -2px 4px rgba(174, 174, 192, 0.4);
+            transition: all 0.3s ease;
+        }
+        .clay-card:hover {
+            transform: translateY(-5px);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e0f2fe;
+        }
+        .problem-example {
+            display: none;
+        }
+        .problem-example.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-8 text-sky-800">Interactive Calculus Learning Hub</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Topics Section -->
+            <div class="clay-card p-6">
+                <h2 class="text-xl font-semibold mb-4 text-sky-700"><i class="bi bi-book"></i> Topics</h2>
+                <div class="space-y-2">
+                    <button onclick="showTopicContent('limits')" class="w-full text-left p-2 hover:bg-sky-100 rounded">
+                        <i class="bi bi-arrow-right-circle"></i> Limits
+                    </button>
+                    <button onclick="showTopicContent('derivatives')" class="w-full text-left p-2 hover:bg-sky-100 rounded">
+                        <i class="bi bi-graph-up"></i> Derivatives
+                    </button>
+                    <button onclick="showTopicContent('integration')" class="w-full text-left p-2 hover:bg-sky-100 rounded">
+                        <i class="bi bi-infinity"></i> Integration
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="clay-card p-6 col-span-2">
+                <div id="topic-content">
+                    <h3 class="text-xl font-semibold mb-4 text-sky-700">Select a Topic to Begin</h3>
+                    <p>Choose a topic from the left to see detailed explanations and example problems.</p>
+                </div>
+
+                <!-- AI Assistant Section -->
+                <div class="mt-6">
+                    <div class="bg-white p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Ask Your Question</h4>
+                        <textarea id="userQuestion" class="w-full p-2 border rounded mb-2" rows="3" placeholder="Type your calculus question here..."></textarea>
+                        <button onclick="getAIResponse()" class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700">
+                            Get Help <i class="bi bi-robot"></i>
+                        </button>
+                    </div>
+                    <div id="aiResponse" class="mt-4 p-4 bg-white rounded-lg hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const topicContent = {
+            limits: {
+                title: "Limits in Calculus",
+                content: `
+                    <h3 class="font-semibold mb-2">Types of Limit Problems:</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Direct Substitution: Simple limits where f(x) is continuous at a point</li>
+                        <li>One-sided Limits: Approaching a point from left or right</li>
+                        <li>Limits at Infinity: Behavior as x approaches ∞ or -∞</li>
+                        <li>Indeterminate Forms: Using L'Hôpital's Rule for 0/0, ∞/∞, etc.</li>
+                        <li>Trigonometric Limits: Special limits involving trig functions</li>
+                    </ul>
+                    <div class="mt-4">
+                        <h4 class="font-semibold">Example:</h4>
+                        <p>lim(x→2) (x2-4)/(x-2) = 4</p>
+                    </div>
+                `
+            },
+            derivatives: {
+                title: "Derivatives in Calculus",
+                content: `
+                    <h3 class="font-semibold mb-2">Types of Derivative Problems:</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Basic Derivatives: Power rule, constant rule</li>
+                        <li>Chain Rule: Composition of functions</li>
+                        <li>Product & Quotient Rules: Products and ratios of functions</li>
+                        <li>Implicit Differentiation: When y is not isolated</li>
+                        <li>Related Rates: Real-world applications</li>
+                    </ul>
+                    <div class="mt-4">
+                        <h4 class="font-semibold">Example:</h4>
+                        <p>d/dx(x3 + 2x2 - 5x + 3) = 3x2 + 4x - 5</p>
+                    </div>
+                `
+            },
+            integration: {
+                title: "Integration in Calculus",
+                content: `
+                    <h3 class="font-semibold mb-2">Types of Integration Problems:</h3>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Basic Integration: Antiderivatives of simple functions</li>
+                        <li>U-Substitution: Change of variable technique</li>
+                        <li>Integration by Parts: Product of functions</li>
+                        <li>Partial Fractions: Rational functions</li>
+                        <li>Definite Integrals: Area problems</li>
+                    </ul>
+                    <div class="mt-4">
+                        <h4 class="font-semibold">Example:</h4>
+                        <p>∫(2x + 3)dx = x2 + 3x + C</p>
+                    </div>
+                `
+            }
+        };
+
+        function showTopicContent(topic) {
+            const contentDiv = document.getElementById('topic-content');
+            const topicData = topicContent[topic];
+            contentDiv.innerHTML = `
+                <h3 class="text-xl font-semibold mb-4 text-sky-700">${topicData.title}</h3>
+                ${topicData.content}
+            `;
+        }
+
+        function getAIResponse() {
+            const question = document.getElementById('userQuestion').value;
+            if (!question.trim()) {
+                alert('Please enter a question.');
+                return;
+            }
+
+            // Simulate AI response with relevant calculus explanations
+            const aiResponse = document.getElementById('aiResponse');
+            aiResponse.classList.remove('hidden');
+            aiResponse.innerHTML = `
+                <div class="font-semibold mb-2">AI Assistant Response:</div>
+                <div class="space-y-2">
+                    <p>Let me help you with that question!</p>
+                    <div class="bg-sky-50 p-3 rounded">
+                        ${generateResponse(question)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateResponse(question) {
+            // Simple AI response simulation based on keywords
+            const keywords = question.toLowerCase();
+            if (keywords.includes('limit')) {
+                return "For limit problems, remember these key steps:<br>1. Try direct substitution first<br>2. If you get an indeterminate form, try factoring<br>3. Consider using L'Hôpital's Rule if needed<br><br>Would you like a specific example?";
+            } else if (keywords.includes('derivative')) {
+                return "When solving derivative problems:<br>1. Identify which rule(s) you need (power, product, chain, etc.)<br>2. Apply the rules step by step<br>3. Simplify your answer<br><br>Need help with a specific type of derivative?";
+            } else if (keywords.includes('integral')) {
+                return "For integration problems:<br>1. Look for patterns that match basic integration rules<br>2. Consider if u-substitution would help<br>3. For more complex problems, try integration by parts<br><br>Would you like to see an example worked out?";
+            } else {
+                return "Please provide more details about your calculus question. Are you working with limits, derivatives, or integrals? Including a specific problem would help me give you a more detailed response.";
+            }
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
